@@ -1,13 +1,9 @@
 # 目次
 - [API概要](#API概要)
 - [使用方法](#使用方法)
-  - [リポジトリのクローン](#### "1.リポジトリのクローン")
 - [DB設計](#DB設計)
 - [エンドポイント](#エンドポイント)
 - [テスト実行](#テスト実行)
-
-# cc-api-solo
-My first solo project!!
 
 # API概要
 このAPIでは買い物リストを作ることができ、購入した商品はリストから削除することができます</br>
@@ -24,15 +20,21 @@ git clone https://github.com/mitsuya-n/cc-api-solo.git
 npm install
 ```
 
-#### 3.マイグレーションの実行
+#### 3.データベースの作成
+postgresを起動した状態で以下コマンドを実行
 ```
-npm migrate
-npm seed
+create database shopping_lists;
 ```
 
-#### 4.サーバーへの接続
+#### 4.マイグレーション、シードの実行
 ```
-npm  dev
+npm run migrate
+npm run seed
+```
+
+#### 5.サーバーへの接続
+```
+npm run dev
 ```
 
 # DB設計
@@ -46,25 +48,48 @@ npm  dev
   | id | integer |  |
 
 # エンドポイント
-- `GET /api/shopping-lists`</br>
-  成功：ステータス200、失敗：ステータス500</br>
-  最新の買い物リストを取得することができる</br>
+### GET /api/shopping-lists</br>
+最新の買い物リストを返します</br>
+（成功：ステータス200、失敗：ステータス500）</br>
   
-- `POST /api/shopping-lists`</br>
-  成功：ステータス201、失敗：ステータス500</br>
-  買い物リストに商品、数量を追加することができる</br>
-  リクエスト時のボディに`item`と`quantity`が必要！</br>
+### POST /api/shopping-lists</br>
+買い物リストにリクエストボディに指定された商品、数量を登録します</br>
+（成功：ステータス201、失敗：ステータス500）</br>
+リクエスト時のボディは以下のように指定します</br>
+```
+{
+    "item": 商品名,
+    "quantity": 数量
+}
+```
   
-- `PATCH /api/shopping-lists/:id`</br>
-  成功：ステータス200、失敗：ステータス500</br>
-  リクエスト時に指定した商品の`item`または`quantity`を修正することができる</br>
-  以下3通りのリクエストが可能！</br>
-  ①ボディに`item`だけを指定</br>
-  ③ボディに`quantity`だけを指定</br>
-  ③ボディに`item`と`quantity`を指定</br>
-- `DELETE /api/shopping-lists/:id`</br>
-  成功：ステータス200、対象商品がない：ステータス404、失敗：ステータス500</br>
-  リクエスト時に指定した`id`の商品をリストから削除することができる</br>
+### PATCH /api/shopping-lists/:id</br>
+指定されたIDの商品をリクエストボディの内容で更新します
+（成功：ステータス200、失敗：ステータス500）</br>
+リクエスト時のボディは以下のように指定します</br>
+＜商品名のみ修正したい場合＞
+```
+{
+    "item": 商品名
+}
+```
+＜数量のみ修正したい場合＞
+```
+{
+    "quantity": 数量
+}
+```
+＜商品名、数量の両方を修正したい場合＞
+```
+{
+    "item": 商品名,
+    "quantity": 数量
+}
+```
+
+### DELETE /api/shopping-lists/:id</br>
+指定されたIDの商品を削除します</br>
+（成功：ステータス200、対象商品がない：ステータス404、失敗：ステータス500）</br>
 
 # テスト実行
 `npm run test`</br>
